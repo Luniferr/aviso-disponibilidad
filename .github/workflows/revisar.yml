@@ -31,7 +31,8 @@ jobs:
           key: estado-${{ github.run_id }}
           restore-keys: estado-
 
-      - run: python revisar.py
+      - id: revisar
+        run: python revisar.py
         env:
           RUT: ${{ secrets.RUT }}
           PROFESIONAL: ${{ secrets.PROFESIONAL }}
@@ -40,6 +41,11 @@ jobs:
           SMTP_USER: ${{ secrets.SMTP_USER }}
           SMTP_PASS: ${{ secrets.SMTP_PASS }}
           MAIL_TO: ${{ secrets.MAIL_TO }}
+
+      # Solo corre cuando se envió un aviso nuevo; la rutina de Claude lo busca por nombre.
+      - name: HAY HORA
+        if: steps.revisar.outputs.hay == '1'
+        run: echo "Aviso nuevo enviado"
 
       - uses: actions/cache/save@v4
         if: hashFiles('.estado/ultimo_aviso') != ''

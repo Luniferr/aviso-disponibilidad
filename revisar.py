@@ -139,6 +139,10 @@ def main():
     ESTADO.parent.mkdir(exist_ok=True)
     ESTADO.write_text(huella)
     print("Hay hora: aviso enviado")
+    # Señal pública sin detalles, para que la rutina de Claude mande el push.
+    if os.environ.get("GITHUB_OUTPUT"):
+        with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+            f.write("hay=1\n")
 
 
 if __name__ == "__main__":
