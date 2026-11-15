@@ -1,0 +1,47 @@
+name: revisar
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: revisar
+  cancel-in-progress: false
+
+jobs:
+  revisar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt && playwright install --with-deps chromium
+
+      # Recuerda la última hora avisada para no repetir el correo cada 15 minutos.
+      - uses: actions/cache/restore@v4
+        with:
+          path: .estado
+          key: estado-${{ github.run_id }}
+          restore-keys: estado-
+
+      - run: python revisar.py
+        env:
+          RUT: ${{ secrets.RUT }}
+          PROFESIONAL: ${{ secrets.PROFESIONAL }}
+          SUCURSAL: ${{ secrets.SUCURSAL }}
+          FECHA_LIMITE: ${{ secrets.FECHA_LIMITE }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+
+      - uses: actions/cache/save@v4
+        if: hashFiles('.estado/ultimo_aviso') != ''
+        with:
+          path: .estado
+          key: estado-${{ github.run_id }}

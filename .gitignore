@@ -1,0 +1,4 @@
+.estado/
+.env
+__pycache__/
+.venv/
