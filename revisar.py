@@ -114,6 +114,16 @@ def enviar_correo(asunto, cuerpo):
 
 
 def main():
+    if os.environ.get("PRUEBA_CORREO") == "true":  # correo de ejemplo, sin revisar Dávila
+        enviar_correo(
+            "PRUEBA · Hay hora disponible: 03-12-2026 10:30",
+            "Esto es una prueba: así te llegará el aviso real.\n\n"
+            f"Apareció una hora el 03-12-2026 a las 10:30 "
+            f"({env('PROFESIONAL')}, {env('SUCURSAL')}).\n\nReserva en {URL}",
+        )
+        print("Correo de prueba enviado")
+        return
+
     rut, profesional, sucursal = env("RUT"), env("PROFESIONAL"), env("SUCURSAL")
     limite = date.fromisoformat(env("FECHA_LIMITE"))
 
@@ -139,10 +149,6 @@ def main():
     ESTADO.parent.mkdir(exist_ok=True)
     ESTADO.write_text(huella)
     print("Hay hora: aviso enviado")
-    # Señal pública sin detalles, para que la rutina de Claude mande el push.
-    if os.environ.get("GITHUB_OUTPUT"):
-        with open(os.environ["GITHUB_OUTPUT"], "a") as f:
-            f.write("hay=1\n")
 
 
 if __name__ == "__main__":
