@@ -1,6 +1,7 @@
 name: revisar
 
 on:
+  # Cada 15 minutos (hora UTC); GitHub puede atrasarse algunos minutos.
   schedule:
     - cron: "*/15 * * * *"
   workflow_dispatch:
