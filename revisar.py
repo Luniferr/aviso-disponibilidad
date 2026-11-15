@@ -22,6 +22,16 @@ MESES = {m: i for i, m in enumerate(
 ESTADO = Path(".estado/ultimo_aviso")
 
 
+PASOS = (
+    "\n\nCómo reservar (menos de 1 minuto):\n"
+    "1. Abre " + URL + "\n"
+    "2. Ingresa tu RUT, elige Profesional → el doctor, sucursal, y presiona Buscar.\n"
+    "3. Presiona Reservar e ingresa el código que te llega por SMS.\n"
+    "4. Marca «No soy un robot» y presiona Reservar.\n"
+    "\nSi la hora ya no aparece, alguien la tomó antes: el aviso seguirá revisando."
+)
+
+
 def env(nombre):
     valor = os.environ.get(nombre, "").strip()
     if not valor:
@@ -119,7 +129,7 @@ def main():
             "PRUEBA · Hay hora disponible: 03-12-2026 10:30",
             "Esto es una prueba: así te llegará el aviso real.\n\n"
             f"Apareció una hora el 03-12-2026 a las 10:30 "
-            f"({env('PROFESIONAL')}, {env('SUCURSAL')}).\n\nReserva en {URL}",
+            f"({env('PROFESIONAL')}, {env('SUCURSAL')})." + PASOS,
         )
         print("Correo de prueba enviado")
         return
@@ -144,7 +154,7 @@ def main():
     enviar_correo(
         f"Hay hora disponible: {fecha:%d-%m-%Y} {hora}",
         f"Apareció una hora el {fecha:%d-%m-%Y} a las {hora} "
-        f"({profesional}, {sucursal}).\n\nReserva en {URL}",
+        f"({profesional}, {sucursal})." + PASOS,
     )
     ESTADO.parent.mkdir(exist_ok=True)
     ESTADO.write_text(huella)
